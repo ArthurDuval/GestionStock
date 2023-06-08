@@ -1,9 +1,11 @@
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.sql.*;
 
 public class clientNotifications {
     Statement stmt;
+    String locCsv;
     clientNotifications() {
         try {
             // spécifier à l'objet DriverManager quel driver JDBC on va utiliser (dans notre cas le Connector/J)
@@ -17,14 +19,35 @@ public class clientNotifications {
             System.out.println("Exception générée : " + ex.getMessage());
         }
     }
-    void créerAlerte() {
-        // TODO
+    void creerAlerte() {
+        try {
+            // création de la socket
+            DatagramSocket socket = new DatagramSocket();
+            // conversion .csv en string afin de le mettre dans le buffer
+            Reader reader = new FileReader(locCsv);
+            BufferedReader br = new BufferedReader(reader);
+            StringBuilder str = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                str.append(line).append('\n');
+            }
+            byte[] buffer = str.toString().getBytes();
+            int size = buffer.length;
+            // création du packet
+            DatagramPacket packet = new DatagramPacket(buffer, size, socket.getLocalAddress(), 35236);
+            // envoi du packet
+            socket.send(packet);
+            socket.close();
+        }
+        catch (Exception ex) {
+            System.out.println("Exception générée : " + ex.getMessage());
+        }
     }
-    void vérifierStock() {
+    void verifierStock() {
         try {
             ResultSet rs = stmt.executeQuery("SELECT type, nombre FROM Stock WHERE decoupe = 0;");
             // TODO : pop-up path
-            String locCsv = "/home/arthur/Desktop/alert.csv";
+            this.locCsv = "/home/arthur/Desktop/alert.csv";
             Writer writer = new FileWriter(locCsv);
             boolean isStockOk = true;
             while(rs.next()) {
@@ -36,7 +59,7 @@ public class clientNotifications {
             writer.close();
             rs.close();
             if (!isStockOk) {
-                créerAlerte();
+                creerAlerte();
             }
         }
         catch (Exception ex) {
