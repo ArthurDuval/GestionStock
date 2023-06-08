@@ -27,7 +27,6 @@ public class parseur {
         }
     }
     void afficherContenuBDD() {
-        // TODO : améliorer l'affichage (type : ...)
         try {
             // créer un objet ResultSet qui va contenir les résultats des requêtes faites par l'objet Statement
             ResultSet rs = stmt.executeQuery("SELECT * FROM Stock;");
@@ -35,12 +34,13 @@ public class parseur {
             int columnsNumber = rsmd.getColumnCount();
             while (rs.next()) {
                 for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = rs.getString(i);
-                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                    System.out.print(rsmd.getColumnName(i) + " : " + rs.getString(i));
+                    if (i < columnsNumber)
+                        System.out.print(", ");
                 }
                 System.out.print('\n');
             }
+            rs.close();
         }
         catch (Exception ex) {
             System.out.println("Exception générée : " + ex.getMessage());
@@ -116,7 +116,6 @@ public class parseur {
             viderBDD();
             while ((line = br.readLine()) != null){
                 words = line.split(",");
-                // TODO : problème de header
                 if (!words[1].equals("nombre")){
                     this.stmt.execute("INSERT INTO Stock (type, nombre, hauteur, largeur, decoupe)" +
                             "VALUES ('" + words[0] + "'," + words[1] + "," + words[2] + "," + words[3] + "," + words[4] + ");");
