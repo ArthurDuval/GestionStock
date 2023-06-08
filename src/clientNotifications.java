@@ -5,7 +5,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class clientNotifications {
     private Statement stmt;

@@ -1,4 +1,9 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,7 +13,7 @@ import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.jopendocument.model.OpenDocument;
 import org.jopendocument.panel.ODSViewerPanel;
-import javax.swing.*;
+import javax.swing.JFrame;
 
 public class parseur {
     // TODO : voir si on peut remplacer les variables globales par des passages en argument
