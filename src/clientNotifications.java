@@ -1,11 +1,15 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.sql.*;
 
 public class clientNotifications {
-    Statement stmt;
-    String locCsv;
+    private Statement stmt;
+    private String locCsv;
     clientNotifications() {
         try {
             // spécifier à l'objet DriverManager quel driver JDBC on va utiliser (dans notre cas le Connector/J)
@@ -19,7 +23,7 @@ public class clientNotifications {
             System.out.println("Exception générée : " + ex.getMessage());
         }
     }
-    void creerAlerte() {
+    public void creerAlerte() {
         try {
             // création de la socket
             DatagramSocket socket = new DatagramSocket();
@@ -43,7 +47,7 @@ public class clientNotifications {
             System.out.println("Exception générée : " + ex.getMessage());
         }
     }
-    void verifierStock() {
+    public void verifierStock() {
         try {
             ResultSet rs = stmt.executeQuery("SELECT type, nombre FROM Stock WHERE decoupe = 0;");
             // TODO : pop-up path

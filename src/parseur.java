@@ -1,15 +1,17 @@
-// gérer la connexion et la manipulation à la BDD
 import java.io.*;
-import java.sql.*;
-// importer l'OpenCalc
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 import org.jopendocument.model.OpenDocument;
-// gérer la fenêtre d'affichage de l'OpenCalc
 import org.jopendocument.panel.ODSViewerPanel;
 import javax.swing.*;
 
 public class parseur {
+    // TODO : voir si on peut remplacer les variables globales par des passages en argument
     private Statement stmt;
     private OpenDocument doc;
     private File file;
@@ -26,7 +28,7 @@ public class parseur {
             System.out.println("Exception générée : " + ex.getMessage());
         }
     }
-    void afficherContenuBDD() {
+    public void afficherContenuBDD() {
         try {
             // créer un objet ResultSet qui va contenir les résultats des requêtes faites par l'objet Statement
             ResultSet rs = stmt.executeQuery("SELECT * FROM Stock;");
@@ -46,7 +48,7 @@ public class parseur {
             System.out.println("Exception générée : " + ex.getMessage());
         }
     }
-    void obtenirOpenCalc() {
+    public void obtenirOpenCalc() {
         this.doc = new OpenDocument();
         // TODO : pop-up path
         String locOds = "/home/arthur/Desktop/stock.ods";
@@ -54,7 +56,7 @@ public class parseur {
         doc.loadFrom(locOds);
         this.file = new File(locOds);
     }
-    void afficherOpenCalc() {
+    public void afficherOpenCalc() {
         if(doc != null) {
             JFrame mainFrame = new JFrame("OpenCalc Viewer");
             ODSViewerPanel viewerPanel = new ODSViewerPanel(doc);
@@ -68,7 +70,7 @@ public class parseur {
             System.out.println("Vous devez la récupérer l'OpenCalc d'abord !");
         }
     }
-    void convertirOdsEnCsv() {
+    public void convertirOdsEnCsv() {
         if(doc != null) {
             try {
                 // créer un objet Sheet à partir de l'OpenDocument afin de le manipuler
@@ -97,7 +99,7 @@ public class parseur {
             System.out.println("Vous devez la récupérer l'OpenCalc d'abord !");
         }
     }
-    void viderBDD() {
+    public void viderBDD() {
         try {
             this.stmt.execute("DELETE FROM Stock;");
         }
@@ -105,7 +107,7 @@ public class parseur {
             System.out.println("Exception générée : " + ex.getMessage());
         }
     }
-    void importerCsvDansBDD() {
+    public void importerCsvDansBDD() {
         try {
             // TODO : pop-up path
             String locCsv = "/home/arthur/Desktop/stock.csv";
