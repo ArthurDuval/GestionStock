@@ -1,62 +1,52 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.Reader;
+import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class clientNotifications {
-    private Statement stmt;
-    private String locCsv;
+    private Statement stmt = null;
+    private final String locCsv = "/home/arthur/Desktop/alert.csv";
     clientNotifications() {
         try {
-            // spécifier à l'objet DriverManager quel driver JDBC on va utiliser (dans notre cas le Connector/J)
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-            // créer une connexion avec la BDD spécifiée
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Store?user=admin&password=admin1234");
-            // créer un objet Statement à partir de la connexion afin de réaliser des requêtes SQL
             this.stmt = conn.createStatement();
-        }
-        catch (Exception ex) {
-            System.out.println("Exception générée : " + ex.getMessage());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | SQLException e) {
+            System.out.println("Exception : " + e.getMessage());
         }
     }
     public void creerAlerte() {
         try {
-            // création de la socket
             DatagramSocket socket = new DatagramSocket();
-            // conversion .csv en string afin de le mettre dans le buffer
-            Reader reader = new FileReader(locCsv);
-            BufferedReader br = new BufferedReader(reader);
+            BufferedReader br = new BufferedReader(new FileReader(this.locCsv));
             StringBuilder str = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 str.append(line).append('\n');
             }
             byte[] buffer = str.toString().getBytes();
-            int size = buffer.length;
-            // création du packet
-            DatagramPacket packet = new DatagramPacket(buffer, size, socket.getLocalAddress(), 35236);
-            // envoi du packet
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("127.0.0.1"), 12345);
             socket.send(packet);
             socket.close();
-        }
-        catch (Exception ex) {
-            System.out.println("Exception générée : " + ex.getMessage());
+        } catch (IOException e) {
+            System.out.println("Exception : " + e.getMessage());
         }
     }
     public void verifierStock() {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT type, nombre FROM Stock WHERE decoupe = 0;");
-            // TODO : pop-up path
-            this.locCsv = "/home/arthur/Desktop/alert.csv";
-            Writer writer = new FileWriter(locCsv);
             boolean isStockOk = true;
+            ResultSet rs = stmt.executeQuery("SELECT type, nombre FROM Stock WHERE decoupe = 0;");
+            Writer writer = new FileWriter(this.locCsv);
             while(rs.next()) {
                 if (rs.getInt(2) < 10) {
                     isStockOk = false;
@@ -67,10 +57,13 @@ public class clientNotifications {
             rs.close();
             if (!isStockOk) {
                 creerAlerte();
+                System.out.println("Envoi demande de réapprovisionnment au service commercial...\n");
             }
-        }
-        catch (Exception ex) {
-            System.out.println("Exception générée : " + ex.getMessage());
+            else {
+                System.out.println("Le stock n'a pas besoin d'être réapprovisionné!\n");
+            }
+        } catch (SQLException | IOException e) {
+            System.out.println("Exception : " + e.getMessage());
         }
     }
 }
