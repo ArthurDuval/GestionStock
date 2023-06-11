@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -41,7 +42,7 @@ public class clientNotifications {
             byte[] buffer = str.toString().getBytes();
             int size = buffer.length;
             // création du packet
-            DatagramPacket packet = new DatagramPacket(buffer, size, socket.getLocalAddress(), 35236);
+            DatagramPacket packet = new DatagramPacket(buffer, size, InetAddress.getByName("127.0.0.1"), 12345);
             // envoi du packet
             socket.send(packet);
             socket.close();
