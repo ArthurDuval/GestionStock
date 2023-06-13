@@ -1,5 +1,11 @@
 import java.util.Scanner;
 
+/*
+downloads :
+    https://dev.mysql.com/downloads/connector/j/ -> mysql-connector-j-8.0.33.jar
+    https://www.jopendocument.org/download.html -> jOpenDocument-1.5.jar
+ */
+
 public class Main {
     public static void menu() {
         System.out.print(
