@@ -60,8 +60,8 @@ public class parseur {
         mainFrame.setVisible(true);
     }
     public void convertirOdsEnCsv() {
-        System.out.println("OpenCalc importé dans la BDD!\n");
         try {
+            System.out.println("OpenCalc importé dans la BDD!\n");
             Sheet sheet = SpreadSheet.createFromFile(new File(this.locOds)).getSheet(0);
             int rCount = sheet.getRowCount();
             int cCount = sheet.getColumnCount();
