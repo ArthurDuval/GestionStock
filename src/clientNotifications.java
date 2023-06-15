@@ -15,12 +15,13 @@ import java.sql.Statement;
 
 public class clientNotifications {
     private Statement stmt = null;
-    private final String locCsv = "/home/arthur/Desktop/alert.csv";
-    clientNotifications() {
+    private String locCsv;
+    clientNotifications(String csv) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Store?user=admin&password=admin1234");
             this.stmt = conn.createStatement();
+            this.locCsv = csv;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException | SQLException e) {
             System.out.println("Exception : " + e.getMessage());
         }

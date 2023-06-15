@@ -11,8 +11,8 @@ public class Main {
                 "Q. Quitter\n");
     }
     public static void main(String[] args) {
-        parseur p = new parseur();
-        clientNotifications cN = new clientNotifications();
+        parseur p = new parseur("/home/arthur/Desktop/stock.ods", "/home/arthur/Desktop/stock.csv");
+        clientNotifications cN = new clientNotifications("/home/arthur/Desktop/alert.csv");
         Scanner sc = new Scanner(System.in);
         char c;
         do {

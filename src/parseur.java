@@ -19,16 +19,15 @@ import javax.swing.JFrame;
 
 public class parseur {
     private Statement stmt;
-    private OpenDocument doc;
-    private final String locOds = "/home/arthur/Desktop/stock.ods";
-    private final String locCsv = "/home/arthur/Desktop/stock.csv";
-    parseur() {
+    private String locOds;
+    private String locCsv;
+    parseur(String ods, String csv) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Store?user=admin&password=admin1234");
             this.stmt = conn.createStatement();
-            this.doc = new OpenDocument();
-            this.doc.loadFrom(this.locOds);
+            this.locOds = ods;
+            this.locCsv =csv;
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SQLException e) {
             System.out.println("Exception : " + e.getMessage());
         }
@@ -53,6 +52,8 @@ public class parseur {
         }
     }
     public void afficherOpenCalc() {
+        OpenDocument doc = new OpenDocument();
+        doc.loadFrom(locOds);
         JFrame mainFrame = new JFrame("OpenCalc Viewer");
         mainFrame.setContentPane(new ODSViewerPanel(doc));
         mainFrame.pack();
@@ -61,7 +62,6 @@ public class parseur {
     }
     public void convertirOdsEnCsv() {
         try {
-            System.out.println("OpenCalc importé dans la BDD!\n");
             Sheet sheet = SpreadSheet.createFromFile(new File(this.locOds)).getSheet(0);
             int rCount = sheet.getRowCount();
             int cCount = sheet.getColumnCount();
@@ -91,24 +91,16 @@ public class parseur {
             BufferedReader br = new BufferedReader(new FileReader(this.locCsv));
             String line; String[] words;
             viderBDD();
-            while (true){
-                try {
-                    if ((line = br.readLine()) == null) break;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            while ((line = br.readLine()) != null){
                 words = line.split(",");
                 if (!words[1].equals("nombre")){
-                    try {
-                        this.stmt.execute("INSERT INTO Stock (type, nombre, hauteur, largeur, decoupe)" +
-                                "VALUES ('" + words[0] + "'," + words[1] + "," + words[2] + "," + words[3] + "," + words[4] + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
+                    this.stmt.execute("INSERT INTO Stock (type, nombre, hauteur, largeur, decoupe)" +
+                            "VALUES ('" + words[0] + "'," + words[1] + "," + words[2] + "," + words[3] + "," + words[4] + ");");
                 }
             }
             br.close();
-        } catch (IOException e) {
+            System.out.println("OpenCalc importé dans la BDD!\n");
+        } catch (IOException | SQLException e) {
             System.out.println("Exception : " + e.getMessage());
         }
     }
